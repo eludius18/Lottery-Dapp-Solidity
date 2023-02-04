@@ -4,6 +4,7 @@ import { Lottery } from "../../typechain-types/contracts";
 import { Deployment } from "hardhat-deploy/dist/types";
 import { expect, assert } from "chai";
 import { advanceBlock, advanceBlocks, increaseTime, latestBlockTimestamp } from "./test-helpers/time";
+import { TestEvent, assert } from "hardhat/test-case";
 import { makeSnapshot, snapshot } from "./test-helpers/snapshot";
 import { parseUnits } from "ethers/lib/utils";
 import Web3 from "web3";
@@ -49,8 +50,8 @@ describe("DutchAuction Test suite", async function () {
             const id: number = await makeSnapshot();
             await lotteryContract.connect(alice).enterLottery({value: 5});
             await lotteryContract.connect(bob).enterLottery({value: 5});
-            const result = await lotteryContract.getBalance();
-            expect(result).to.equal(10);
+            const lotteryBalance = await lotteryContract.connect(bob).getBalance();
+            expect(lotteryBalance).to.equal(10);
             snapshot(id);
         });
     });

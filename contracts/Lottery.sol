@@ -21,6 +21,7 @@ contract Lottery is
 
     function initialize(uint256 _miniumPayment) initializer public {
         miniumPayment = _miniumPayment;
+        islotteryOngoing = true;
         __Ownable_init();
         __IsPausable_init();
     }
@@ -30,6 +31,16 @@ contract Lottery is
     address payable[] public players;
     uint256 public miniumPayment;
     bool public islotteryOngoing;
+    address public player;
+    address public winner;
+    uint256 public value;
+    uint256 public totalQtyWon;
+
+    //============== EVENTS ===============
+
+    event newPlayer(address player, uint256 value);
+    event selectedWinner(address winner, uint256 totalQtyWon);
+    event newMiniumPayment(uint256 miniumPayment);
 
     //============== MODIFIERS ==============
 
@@ -49,8 +60,10 @@ contract Lottery is
         nonReentrant
         whenNotPaused
         paymentMeetRequirements
+        lotteryOngoing
     {
         players.push(payable(msg.sender));
+        emit newPlayer(msg.sender, msg.value);
     }
 
     function selectWinner() 
@@ -59,11 +72,13 @@ contract Lottery is
     {
         islotteryOngoing = false;
         uint index = getRandomNumber() % players.length;
-        (bool success, ) = payable(players[index]).call{value: address(this).balance}("");
-        require(success, "error sending BNB");
-
+        address lotteryWinner = players[index];
         // reset the state of the contract
         players = new address payable[](0);
+        (bool success, ) = payable(lotteryWinner).call{value: address(this).balance}("");
+        require(success, "error sending BNB");
+        islotteryOngoing = true;
+        emit selectedWinner(lotteryWinner, address(this).balance);
     }
 
     function changeContractOwner(address newOwner) public onlyOwner {
@@ -71,12 +86,13 @@ contract Lottery is
         transferOwnership(newOwner);
     }
 
-    function changeDefaultMiniumPayment(uint256 newMiniumPayment)
+    function changeDefaultMiniumPayment(uint256 _newMiniumPayment)
         public
         onlyOwner
     {
-        require(newMiniumPayment != 0, "New Minium Payment should be up to 0");
-        miniumPayment = newMiniumPayment;
+        require(_newMiniumPayment != 0, "New Minium Payment should be up to 0");
+        miniumPayment = _newMiniumPayment;
+        emit newMiniumPayment(_newMiniumPayment);
     }
 
     function getMiniumPayment() public view returns (uint256) {
@@ -84,15 +100,15 @@ contract Lottery is
     }
 
     function getRandomNumber() internal view returns (uint) {
-        address addressOwner = owner();
-        return uint(keccak256(abi.encodePacked(addressOwner, block.timestamp)));
+        uint256 seed = uint256(block.timestamp) + uint256(block.difficulty);
+        return uint256(keccak256(abi.encodePacked(seed)));
     }
 
-    function getPlayers() whenNotPaused public view returns (address payable[] memory) {
+    function getPlayers() public view returns (address payable[] memory) {
         return players;
     }
 
-    function getBalance() whenNotPaused public view returns (uint256) {
+    function getBalance() public view returns (uint256) {
         return address(this).balance;
     }
 }
