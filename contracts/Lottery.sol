@@ -80,7 +80,7 @@ contract Lottery is
     }
     /// @notice Select function OnlyOwner to select Winner using GetRandom and tranfer amounto to winner
     function selectWinner() 
-        public payable 
+        public 
         OnlySelectedWinnerOwner(msg.sender)
     {
         islotteryOngoing = false;
