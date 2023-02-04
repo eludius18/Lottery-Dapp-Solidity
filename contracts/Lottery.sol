@@ -6,6 +6,9 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 import "./components/IsPausable.sol";
 
+/// @title Lottery Smart Contract using block timestamp/difficulty as a source of randomness.
+/// @author eludius18
+/// @notice This Smart Contract allow to enter ETH and takes prizes
 contract Lottery is
     Initializable,
     OwnableUpgradeable,
@@ -44,17 +47,20 @@ contract Lottery is
 
     //============== MODIFIERS ==============
 
+    /// @notice This modifier checks if Lottery is Ongoing
     modifier lotteryOngoing() {
         require(islotteryOngoing, "Lottery has ended");
         _;
     }
-
+    /// @notice This modifier checks if user sets correctly payment
     modifier paymentMeetRequirements() {
+        require(msg.sender == tx.origin, "Only EOA");
         require(msg.value > 0, "You must send Ether to enter the lottery");
         require(msg.value >= miniumPayment, "You must send a Minium amout of Ether");
         _;
     }
 
+    /// @notice Enter function to send ETH
     function enterLottery() 
         public payable
         nonReentrant
@@ -65,7 +71,7 @@ contract Lottery is
         players.push(payable(msg.sender));
         emit newPlayer(msg.sender, msg.value);
     }
-
+    /// @notice Select function OnlyOwner to select Winner using GetRandom and tranfer amounto to winner
     function selectWinner() 
         public payable 
         onlyOwner
@@ -81,11 +87,16 @@ contract Lottery is
         emit selectedWinner(lotteryWinner, address(this).balance);
     }
 
+    /// @notice Function to change the ownership of the Smart Contract
+    /// @param newOwner new Owner Wallet
+
     function changeContractOwner(address newOwner) public onlyOwner {
         require(newOwner != address(0), "Ownable: new owner is the zero address");
         transferOwnership(newOwner);
     }
 
+    /// @notice Function OnlyOwner to change the minium investment defined in intilization
+    /// @param _newMiniumPayment new minium Payment
     function changeDefaultMiniumPayment(uint256 _newMiniumPayment)
         public
         onlyOwner
@@ -95,19 +106,22 @@ contract Lottery is
         emit newMiniumPayment(_newMiniumPayment);
     }
 
+    /// @notice Get funtion which returns MiniumPayment Value
     function getMiniumPayment() public view returns (uint256) {
         return miniumPayment;
     }
-
+    /// @notice Get funtion which returns Random Number used to get lottery winner
     function getRandomNumber() internal view returns (uint) {
         uint256 seed = uint256(block.timestamp) / uint256(block.difficulty);
         return uint256(keccak256(abi.encodePacked(seed)));
     }
 
+    /// @notice Get funtion which returns an array of players in current lottery
     function getPlayers() public view returns (address payable[] memory) {
         return players;
     }
 
+    /// @notice Get funtion which returns total balance in lottery Smart Contract
     function getBalance() public view returns (uint256) {
         return address(this).balance;
     }

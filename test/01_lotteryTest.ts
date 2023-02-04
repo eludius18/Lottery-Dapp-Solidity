@@ -82,6 +82,16 @@ describe("DutchAuction Test suite", async function () {
             await lotteryContract.connect(bob).enterLottery({value: 5});
             snapshot(id);
         });
+        it('should show that getPlayers array includes bob and alice accounts', async () => {
+            await lotteryContract.connect(alice).enterLottery({ value: 3 });
+            await lotteryContract.connect(bob).enterLottery({ value: 5 });
+            const aliceAddress = await alice.getAddress();
+            const bobAddress = await bob.getAddress();
+            const players = await lotteryContract.getPlayers();
+            const playersArray = players.map((p: string) => p.toString());
+            const walletsIncluded = playersArray.includes(aliceAddress) && playersArray.includes(bobAddress);
+            assert.isTrue(walletsIncluded, 'Both alice and bob addresses should be included in the players array');
+          });
     });
     describe("selectWinner function checks", () => {
         it("should allow Only to Owner to use selectWinner function", async () => {
