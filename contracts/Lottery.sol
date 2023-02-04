@@ -22,8 +22,9 @@ contract Lottery is
 
     //============== INITIALIZE ==============
 
-    function initialize(uint256 _miniumPayment) initializer public {
+    function initialize(uint256 _miniumPayment, address _selectWinnerOwner) initializer public {
         miniumPayment = _miniumPayment;
+        selectWinnerOwner = msg.sender;
         islotteryOngoing = true;
         __Ownable_init();
         __IsPausable_init();
@@ -34,6 +35,7 @@ contract Lottery is
     address payable[] public players;
     uint256 public miniumPayment;
     bool public islotteryOngoing;
+    address public selectWinnerOwner;
     address public player;
     address public winner;
     uint256 public value;
@@ -44,12 +46,17 @@ contract Lottery is
     event newPlayer(address player, uint256 value);
     event selectedWinner(address winner, uint256 totalQtyWon);
     event newMiniumPayment(uint256 miniumPayment);
+    event newselectWinnerOwner(address selectWinnerOwner);
 
     //============== MODIFIERS ==============
 
     /// @notice This modifier checks if Lottery is Ongoing
     modifier lotteryOngoing() {
         require(islotteryOngoing, "Lottery has ended");
+        _;
+    }
+    modifier OnlySelectedWinnerOwner(address _selectWinnerOwner) {
+        require(selectWinnerOwner == _selectWinnerOwner, "Only selectWinnerOwner");
         _;
     }
     /// @notice This modifier checks if user sets correctly payment
@@ -74,7 +81,7 @@ contract Lottery is
     /// @notice Select function OnlyOwner to select Winner using GetRandom and tranfer amounto to winner
     function selectWinner() 
         public payable 
-        onlyOwner
+        OnlySelectedWinnerOwner(msg.sender)
     {
         islotteryOngoing = false;
         uint index = getRandomNumber() % players.length;
@@ -95,6 +102,15 @@ contract Lottery is
         transferOwnership(newOwner);
     }
 
+    /// @notice Change Oener of selectWinner function
+    /// @param _selectWinnerOwner new selectWinnerOwner
+
+    function changeSelectWinnerOwner(address _selectWinnerOwner) public onlyOwner {
+        require(_selectWinnerOwner != address(0), "Ownable: new owner is the zero address");
+        selectWinnerOwner = _selectWinnerOwner;
+        emit newselectWinnerOwner(selectWinnerOwner);
+    }
+
     /// @notice Function OnlyOwner to change the minium investment defined in intilization
     /// @param _newMiniumPayment new minium Payment
     function changeDefaultMiniumPayment(uint256 _newMiniumPayment)
@@ -103,7 +119,7 @@ contract Lottery is
     {
         require(_newMiniumPayment != 0, "New Minium Payment should be up to 0");
         miniumPayment = _newMiniumPayment;
-        emit newMiniumPayment(_newMiniumPayment);
+        emit newMiniumPayment(miniumPayment);
     }
 
     /// @notice Get funtion which returns MiniumPayment Value

@@ -1,6 +1,7 @@
 import { ethers, run } from "hardhat";
 import { DeployFunction } from "hardhat-deploy/types";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
+import { constants } from "ethers";
 
 const delay = (ms: number) => {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -11,6 +12,7 @@ const deploy: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deployer } = await getNamedAccounts();
   const { deploy } = deployments;
   const miniumPayment = 0;
+  const selectWinnerOwner = constants.AddressZero;
 
   const lottery = await deploy("Lottery", {
     from: deployer,
@@ -22,7 +24,8 @@ const deploy: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
         init: {
           methodName: "initialize",
           args: [
-            miniumPayment
+            miniumPayment,
+            selectWinnerOwner
           ],
         },
       },
