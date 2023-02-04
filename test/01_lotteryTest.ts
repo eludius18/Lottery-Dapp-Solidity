@@ -17,7 +17,7 @@ describe("DutchAuction Test suite", async function () {
     let owner: Signer;
     let alice: Signer;
     let bob: Signer;
-    let miniumPayment:number = 2;
+    let miniumPayment:number = 0;
     const provider = waffle.provider;
 
     before(async function () {
@@ -64,6 +64,9 @@ describe("DutchAuction Test suite", async function () {
         });
         it("shoul not allow amounts of ether that doesn't meet Minium value Payment defined", async () => {
             const id: number = await makeSnapshot();
+            await lotteryContract.connect(owner).changeDefaultMiniumPayment(5);
+            const result = await lotteryContract.getMiniumPayment();
+            expect(result).to.equal(5);
             await expect(lotteryContract.connect(alice).enterLottery({value: 1})).to.revertedWith("You must send a Minium amout of Ether");
             snapshot(id);
         });

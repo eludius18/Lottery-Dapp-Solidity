@@ -108,7 +108,6 @@ const config: HardhatUserConfig = {
     coinmarketcap: process.env.COINMARKETCAP_API_KEY,
     showTimeSpent: true,
     noColors: true,
-    outputFile: "./gasReporter/Lottery.txt",
   },
   docgen: {
     outputDir: "docs",

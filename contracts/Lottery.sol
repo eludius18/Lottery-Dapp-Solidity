@@ -100,7 +100,7 @@ contract Lottery is
     }
 
     function getRandomNumber() internal view returns (uint) {
-        uint256 seed = uint256(block.timestamp) + uint256(block.difficulty);
+        uint256 seed = uint256(block.timestamp) / uint256(block.difficulty);
         return uint256(keccak256(abi.encodePacked(seed)));
     }
 
