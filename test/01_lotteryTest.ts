@@ -6,6 +6,8 @@ import { expect, assert } from "chai";
 import { advanceBlock, advanceBlocks, increaseTime, latestBlockTimestamp } from "./test-helpers/time";
 import { TestEvent, assert } from "hardhat/test-case";
 import { makeSnapshot, snapshot } from "./test-helpers/snapshot";
+import { expect } from "@openzeppelin/test-helpers";
+import { Contract } from "@openzeppelin/upgrades";
 import { parseUnits } from "ethers/lib/utils";
 import Web3 from "web3";
 import { Transaction } from "web3-eth";
