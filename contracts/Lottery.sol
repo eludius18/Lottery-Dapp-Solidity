@@ -141,4 +141,9 @@ contract Lottery is
     function getBalance() public view returns (uint256) {
         return address(this).balance;
     }
+
+    /// @notice Get funtion which returns select Winner function Owner
+    function getSelectWinnerOwner() public view returns (address) {
+        return selectWinnerOwner;
+    }
 }

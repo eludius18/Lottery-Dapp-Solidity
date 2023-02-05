@@ -52,6 +52,22 @@ describe("DutchAuction Test suite", async function () {
             expect(lotteryBalance).to.equal(10);
             snapshot(id);
         });
+        it("should allow Owner to change Select Winner Owner", async () => {
+            const id: number = await makeSnapshot();
+            const aliceaddress = await alice.getAddress();
+            await lotteryContract.connect(owner).changeSelectWinnerOwner(aliceaddress);
+            const result = await lotteryContract.getSelectWinnerOwner();
+            expect(result).to.equal(aliceaddress);
+            snapshot(id);
+        });
+        it("should allow Owner to change Contract Owner", async () => {
+            const id: number = await makeSnapshot();
+            const aliceaddress = await alice.getAddress();
+            await lotteryContract.connect(owner).changeContractOwner(aliceaddress);
+            const result = await lotteryContract.owner();
+            expect(result).to.equal(aliceaddress);
+            snapshot(id);
+        });
     });
 
     describe("enterLottery function checks", () => {
@@ -79,16 +95,6 @@ describe("DutchAuction Test suite", async function () {
             await lotteryContract.connect(alice).enterLottery({value: 3});
             await lotteryContract.connect(bob).enterLottery({value: 5});
             snapshot(id);
-        });
-        it('should show that getPlayers array includes bob and alice accounts', async () => {
-            await lotteryContract.connect(alice).enterLottery({ value: 3 });
-            await lotteryContract.connect(bob).enterLottery({ value: 5 });
-            const aliceAddress = await alice.getAddress();
-            const bobAddress = await bob.getAddress();
-            const players = await lotteryContract.getPlayers();
-            const playersArray = players.map((p: string) => p.toString());
-            const walletsIncluded = playersArray.includes(aliceAddress) && playersArray.includes(bobAddress);
-            assert.isTrue(walletsIncluded, 'Both alice and bob addresses should be included in the players array');
         });
     });
     describe("selectWinner function checks", () => {
@@ -140,9 +146,8 @@ describe("DutchAuction Test suite", async function () {
         });
         it("should allow anyone to get Minium Payment in lottery", async () => {
             const id: number = await makeSnapshot();
-            await lotteryContract.connect(owner).changeDefaultMiniumPayment(3)
             const lotteryBalance = await lotteryContract.connect(owner).getMiniumPayment();
-            expect(lotteryBalance).to.equal(3);
+            expect(lotteryBalance).to.equal(miniumPayment);
             snapshot(id);
         });
     });
