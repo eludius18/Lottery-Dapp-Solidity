@@ -24,7 +24,7 @@ contract Lottery is
 
     function initialize(uint256 _miniumPayment, address _selectWinnerOwner) initializer public {
         miniumPayment = _miniumPayment;
-        selectWinnerOwner = msg.sender;
+        selectWinnerOwner = _selectWinnerOwner;
         islotteryOngoing = true;
         __Ownable_init();
         __IsPausable_init();

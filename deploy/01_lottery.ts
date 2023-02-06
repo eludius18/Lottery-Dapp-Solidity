@@ -12,7 +12,7 @@ const deploy: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deployer } = await getNamedAccounts();
   const { deploy } = deployments;
   const miniumPayment = 0;
-  const selectWinnerOwner = constants.AddressZero;
+  const selectWinnerOwner = deployer;
 
   const lottery = await deploy("Lottery", {
     from: deployer,
