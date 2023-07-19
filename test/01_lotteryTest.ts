@@ -8,7 +8,7 @@ import { makeSnapshot, snapshot } from "./test-helpers/snapshot";
 import { expect } from "@openzeppelin/test-helpers";
 
 
-describe("DutchAuction Test suite", async function () {
+describe("Lottery Test", async function () {
     let accounts: Signer[];
     let lotteryDeployment: Deployment;
     let lotteryContract: Lottery;

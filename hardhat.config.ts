@@ -74,8 +74,13 @@ const config: HardhatUserConfig = {
     localhost: {
       url: "http://127.0.0.1:8545"
     },
-    goerli: {
-      url: `https://goerli.infura.io/v3/${process.env.INFURA_PROJECT_KEY}`,
+    mumbai: {
+      url: process.env.MUMBAI_RPC_URL,
+      chainId: 80001,
+      accounts: [`0x${process.env.DEPLOYER_PRIVATE_KEY1}`],
+    },
+/*     goerli: {
+      url: process.env.RPC_URL,
       chainId: 5,
       accounts: [`0x${process.env.DEPLOYER_PRIVATE_KEY1}`],
     },
@@ -84,7 +89,7 @@ const config: HardhatUserConfig = {
       chainId: 97,
       gas: 2100000,
       gasPrice: 12000000000,
-      accounts: [`0x${process.env.DEPLOYER_PRIVATE_KEY1}`]
+      accounts: [`0x${process.env.DEPLOYER_PRIVATE_KEY1}`],
     },
     bscMainnet: {
       url: `https://bsc-dataseed.binance.org/`,
@@ -92,13 +97,14 @@ const config: HardhatUserConfig = {
       gas: 2100000,
       gasPrice: 5500000000,
       accounts: [`0x${process.env.DEPLOYER_PRIVATE_KEY1}`],
-    },
+    }, */
   },
   etherscan: {
     apiKey: {
       bscTestnet: "QA91H8CYJHDEWTZDV7CQGI2I7YQBCQZ4K1",
       bsc: "W6M4YY17TYS7HKQKA89QUTP5NGVAA4EKXS",
       goerli: "SZ64QT2TDYZ1UXNFST97U6NHJBV4K7835N",
+      polygonMumbai: "K739WEHAU1ARZBVUJEPGC3HPDTCH1MUQPA",
     }
   },
   gasReporter: {
